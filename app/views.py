@@ -9,11 +9,13 @@ from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
 from .forms import UploadForm
+from .utils import get_uploaded_images
 
 
 ###
 # Routing for your application.
 ###
+
 
 @app.route('/')
 def home():
@@ -89,6 +91,15 @@ def send_text_file(file_name):
     """Send your static text file."""
     file_dot_text = file_name + '.txt'
     return app.send_static_file(file_dot_text)
+    
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    imgs = enumerate(get_uploaded_images())
+    return render_template('files.html',images=imgs)
+    
+
 
 
 @app.after_request
